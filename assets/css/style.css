@@ -1,0 +1,15 @@
+body{
+    background-color: salmon;
+}
+
+header{
+    background: linear-gradient(90deg,blue,purple);
+    color: white;
+    height: 5vh;
+    font-size: 18px;
+    font-weight: bolder;
+}
+
+.weather-card{
+    width: 20%;
+}
