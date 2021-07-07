@@ -6,7 +6,7 @@ The goal of this project was to build a weather widget that tells the user the c
 - [MDN Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 
 # What I Did
-[Deployed Application]()
+[Deployed Application](https://delizoderek.github.io/weather-widget/)
 ![Opening Splash Screen](./assets/media/SplashScreen.png)
 ![Search Example](./assets/media/CitySearch.png)
 ![Search Two Word City Name](./assets/media/CitySearch_TwoWords.png)
