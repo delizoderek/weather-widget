@@ -1,15 +1,22 @@
 body{
-    background-color: salmon;
+    background-color: #7F3E8A;
+    color: white;
 }
 
 header{
     background: linear-gradient(90deg,blue,purple);
     color: white;
     height: 5vh;
+    min-height: 14px;
     font-size: 18px;
     font-weight: bolder;
 }
 
 .weather-card{
     width: 20%;
+    background-color: navy;
+    color: white;
+    margin: 10px;
+    padding: 5px;
+    border-radius: 5px;
 }
