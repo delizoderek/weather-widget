@@ -33,10 +33,10 @@ function getWeather(request){
         return response.json();
     })
     .then(function(data){
-        if(data.length){
-            let latitude = data[0].lat;
-            let longitude = data[0].lon;
-            todayWeather.city = data[0].name;
+        if(data){
+            let latitude = data.coord.lat;
+            let longitude = data.coord.lon;
+            todayWeather.city = data.name;
             todayWeather.lat = latitude;
             todayWeather.lon = longitude;
             let onecallUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=minutely,hourly&limit=6&units=imperial&appid=${apiKey}`;
@@ -54,13 +54,25 @@ function onecallApi(req){
         return resp.json();
     })
     .then(function(data){
-        console.log(data);
         todayWeather.city_head.textContent = `${todayWeather.city} ${moment.unix(data.current.dt).format("MM/DD/YYYY")}`;
-        todayWeather.weather_icon.setAttribute("src",`http://openweathermap.org/img/w/${data.current.weather[0].icon}.png`);
+        todayWeather.weather_icon.setAttribute("src",`https://openweathermap.org/img/w/${data.current.weather[0].icon}.png`);
         todayWeather.temp.textContent = data.current.temp;
         todayWeather.wind.textContent = data.current.wind_speed;
         todayWeather.humidity.textContent = data.current.humidity;
         todayWeather.uvIdx.textContent = data.current.uvi;
+        if(data.current.uvi > 10){
+            todayWeather.uvIdx.setAttribute("style","color: #be00be");
+        } else if(data.current.uvi > 7){
+            todayWeather.uvIdx.setAttribute("style","color: #ff0000");
+        } else if(data.current.uvi > 5){
+            todayWeather.uvIdx.setAttribute("style","color: #ff9928");
+        } else if(data.current.uvi > 2){
+            todayWeather.uvIdx.setAttribute("style","color: #ffff00");
+        } else if(data.current.uvi >= 1){
+            todayWeather.uvIdx.setAttribute("style","color: #99cc00");
+        } else{
+            todayWeather.uvIdx.setAttribute("style","color: #ffffff");
+        }
         addToHistory(todayWeather.city);
         updateForecast(data.daily);
     });
@@ -75,7 +87,7 @@ function updateForecast(forecast){
         let fSpeed = document.querySelector(`#speed-${i-1}`);
         let fHumid = document.querySelector(`#humid-${i-1}`);
         fDate.textContent = moment.unix(forecast[i].dt).format("MM/DD/YYYY");
-        fImg.setAttribute("src",`http://openweathermap.org/img/w/${forecast[i].weather[0].icon}.png`);
+        fImg.setAttribute("src",`https://openweathermap.org/img/w/${forecast[i].weather[0].icon}.png`);
         fTemp.textContent = forecast[i].temp.day + " °F";
         fSpeed.textContent = forecast[i].wind_speed + " MPH";
         fHumid.textContent = forecast[i].humidity;
@@ -93,9 +105,9 @@ function renderHistory(){
 function addToHistory(cityName){
     if(!doesCityExist(cityName) && cityName !== ""){
         let histBtn = generateButton(cityName, todayWeather.lat, todayWeather.lon);
-        weatherStorage.city.push(cityName);
-        weatherStorage.lat.push(todayWeather.lat);
-        weatherStorage.lon.push(todayWeather.lon);
+        weatherStorage.city.unshift(cityName);
+        weatherStorage.lat.unshift(todayWeather.lat);
+        weatherStorage.lon.unshift(todayWeather.lon);
         localStorage.setItem("historyButtons",JSON.stringify(weatherStorage));
         history.unshift(histBtn);
         if(history.length > 12){
@@ -110,10 +122,13 @@ function loadStorage(){
     let temp = JSON.parse(localStorage.getItem("historyButtons"));
     if(temp != null){
         for(let i = 0; i < temp.city.length; i++){
-            history.unshift(generateButton(temp.city[i],temp.lat[i],temp.lon[i]));
+            history.push(generateButton(temp.city[i],temp.lat[i],temp.lon[i]));
         }
         if(history.length > 0){
+            weatherStorage = temp;
             renderHistory();
+            todayWeather.city = history[0].textContent;
+            onecallApi(`https://api.openweathermap.org/data/2.5/onecall?lat=${history[0].dataset.latitude}&lon=${history[0].dataset.longitude}&exclude=minutely,hourly&limit=6&units=imperial&appid=${apiKey}`);
         }
     }
 }
@@ -172,7 +187,7 @@ searchBtn.addEventListener("click",function(event){
     let inputString = cityInput.value;
     inputString = formatCityName(inputString);
     if(inputString !== "-1"){
-        let requestUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${inputString}&limit=1&appid=${apiKey}`;
+        let requestUrl = `http://api.openweathermap.org/data/2.5/weather?q=${inputString}&appid=${apiKey}`;
         getWeather(requestUrl);
     } else {
         alert('please enter a search term');
