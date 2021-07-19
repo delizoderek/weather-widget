@@ -187,7 +187,7 @@ searchBtn.addEventListener("click",function(event){
     let inputString = cityInput.value;
     inputString = formatCityName(inputString);
     if(inputString !== "-1"){
-        let requestUrl = `http://api.openweathermap.org/data/2.5/weather?q=${inputString}&appid=${apiKey}`;
+        let requestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${inputString}&appid=${apiKey}`;
         getWeather(requestUrl);
     } else {
         alert('please enter a search term');
